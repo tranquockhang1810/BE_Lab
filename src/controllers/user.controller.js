@@ -9,8 +9,8 @@ exports.createUser = async (req, res) => {
     .then((data) => {
       res.send(data);
     })
-    .catch((err) => {
-      res.status(500).send(err);
+    .catch((error) => {
+      next(error);
     });
 };
 
@@ -22,13 +22,13 @@ exports.getAllUsers = async (req, res) => {
     .then((users) => {
       res.send(users);
     })
-    .catch((err) => {
-      res.status(500).send(err);
+    .catch((error) => {
+      next(error);
     });
 };
 
 // Get user details
-exports.getUserById = async (req, res) => {
+exports.getUserById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await userModel
@@ -40,7 +40,7 @@ exports.getUserById = async (req, res) => {
       return res.send(user);
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
 
@@ -60,7 +60,7 @@ exports.updateUser = async (req, res) => {
       return res.send(user);
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
 
@@ -75,6 +75,6 @@ exports.deleteUser = async (req, res) => {
       return res.send(user);
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
