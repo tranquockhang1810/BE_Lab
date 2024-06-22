@@ -1,43 +1,52 @@
 const userModel = require("../models/user.model");
+const UserService = require("../services/user.service");
 
 // Create user
-exports.createUser = async (req, res) => {
-  const { name, email } = req.body;
-  const user = new userModel({ name, email });
-  await user
-    .save()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((error) => {
-      next(error);
-    });
+exports.createUser = async (req, res, next) => {
+  try {
+    const user = req.body;
+    const data = await UserService.createUser(user);
+    if (data) {
+      res.status(201).json({
+        data: data,
+        message: "User created successfully",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Get all users
-exports.getAllUsers = async (req, res) => {
-  await userModel
-    .find()
-    .populate("posts", "title content")
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((error) => {
-      next(error);
-    });
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await UserService.getAllUsers();
+    if (users) {
+      res.status(200).json({
+        data: users,
+        message: "Get users successfully",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Get user details
 exports.getUserById = async (req, res, next) => {
-  const { id } = req.params;
   try {
-    const user = await userModel
-    .findById(id)
-    .populate("posts", "title content");
+    const { id } = req.params;
+    const user = await UserService.getUserById(id);
     if (!user) {
-      return res.status(404).send("User not found");
+      return next({
+        status: 404,
+        message: "User not found",
+      });
     } else {
-      return res.send(user);
+      return res.status(200).json({
+        data: user,
+        message: "Get user successfully",
+      });
     }
   } catch (error) {
     next(error);
@@ -45,19 +54,21 @@ exports.getUserById = async (req, res, next) => {
 };
 
 // Update user
-exports.updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
+exports.updateUser = async (req, res, next) => {
   try {
-    const user = await userModel.findByIdAndUpdate(
-      id,
-      { name, email },
-      { new: true }
-    );
-    if (!user) {
-      return res.status(404).send("User not found");
+    const { id } = req.params;
+    const user = req.body;
+    const newUser = await UserService.updateUser(id, user);
+    if (!newUser) {
+      return next({
+        status: 404,
+        message: "Update user failed",
+      });
     } else {
-      return res.send(user);
+      return res.send({
+        data: newUser,
+        message: "Update user successfully",
+      });
     }
   } catch (error) {
     next(error);
@@ -65,14 +76,20 @@ exports.updateUser = async (req, res) => {
 };
 
 // Delete user
-exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
+exports.deleteUser = async (req, res, next) => {
   try {
-    const user = await userModel.findByIdAndDelete(id);
+    const { id } = req.params;
+    const user = await UserService.deleteUser(id);
     if (!user) {
-      return res.status(404).send("User not found");
+      return next({
+        status: 404,
+        message: "Delete user failed",
+      });
     } else {
-      return res.send(user);
+      return res.status(200).json({
+        status: 200,
+        message: "Delete user successfully",
+      });
     }
   } catch (error) {
     next(error);

@@ -1,78 +1,97 @@
 const postModel = require("../models/post.model");
 const userModel = require("../models/user.model");
+const PostService = require("../services/post.service");
 
 // Create post
-exports.createPost = async (req, res) => {
-  const { title, content, userId } = req.body;
+exports.createPost = async (req, res, next) => {
   try {
-    const post = new postModel({ title, content, userId });
-    await post.save();
-    await userModel.findByIdAndUpdate(userId, { $push: { posts: post._id } });
-    res.send(post);
+    const { title, content, user } = req.body;
+    const post = await PostService.createPost({ title, content, user });
+    if (post) {
+      res.status(201).json({
+        data: post,
+        message: "Post created successfully"
+      });
+    }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 };
 
 // Get all posts
-exports.getAllPosts = async (req, res) => {
-  await postModel
-    .find()
-    .then((posts) => {
-      res.send(posts);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
-    });
+exports.getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await PostService.getAllPosts();
+    if (posts) {
+      res.status(200).json({
+        data: posts,
+        message: "Get posts successfully"
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Get post details
-exports.getPostById = async (req, res) => {
-  const { id } = req.params;
+exports.getPostById = async (req, res, next) => {
   try {
-    const post = await postModel.findById(id);
+    const { id } = req.params;
+    const post = await PostService.getPostById(id);
     if (!post) {
-      return res.status(404).send("Post not found");
+      return next({
+        status: 404,
+        message: "Post not found"
+      });
     } else {
-      return res.send(post);
+      res.status(200).json({
+        data: post,
+        message: "Get post successfully"
+      });
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 }
 
 // Update post
-exports.updatePost = async (req, res) => {
-  const { id } = req.params;
-  const { title, content } = req.body;
+exports.updatePost = async (req, res, next) => {
   try {
-    const post = await postModel.findByIdAndUpdate(
-      id,
-      { title, content },
-      { new: true }
-    );
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const post = await PostService.updatePost(id, { title, content });
     if (!post) {
-      return res.status(404).send("Post not found");
+      return next({
+        status: 404,
+        message: "Post not found"
+      });
     } else {
-      return res.send(post);
+      return res.status(200).json({
+        data: post,
+        message: "Update post successfully"
+      });
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 }
 
 // Delete post
 exports.deletePost = async (req, res) => {
-  const { id } = req.params;
   try {
-    const post = await postModel.findByIdAndDelete(id);
+    const { id } = req.params;
+    const post = await PostService.deletePost(id);
     if (!post) {
-      return res.status(404).send("Post not found");
+      return next({
+        status: 404,
+        message: "Post not found"
+      })
     } else {
-      await userModel.findByIdAndUpdate(post.userId, { $pull: { posts: post._id } });
-      return res.send(post);
+      return res.status(200).json({
+        message: "Post deleted successfully"
+      });
     }
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
 }
