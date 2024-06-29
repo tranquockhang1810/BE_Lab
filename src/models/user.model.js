@@ -2,6 +2,49 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const { validateEmail, validateMaxLength, validateMinLength } = require("../helpers/FieldValidation");
 
+// Model
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - phone
+ *         - address
+ *         - posts
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the user
+ *         name:
+ *           type: string
+ *           description: The name of the user
+ *         phone:
+ *           type: string
+ *           description: The phone of the user
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *         address:
+ *           type: string
+ *           description: The address of the user
+ *         posts:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: The posts of the user
+ *       example:
+ *         id: 123
+ *         name: John Doe
+ *         phone: 0123456789
+ *         address: 123 Main Street
+ *         email: "7g6yK@example.com"
+ *         posts: []
+ */
+
 const UserSchema = new Schema({
   name: {
     type: String,

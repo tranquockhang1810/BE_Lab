@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-const swagger = require('./swagger');
+const swagger = require('./swagger.js');
 
 app.use(bodyParser.json());
 
@@ -14,7 +14,7 @@ require("./dbs/mongo");
 swagger(app);
 
 // set router
-app.use(require("./routers/index"));
+app.use(require("./routes/index"));
 
 //Error handler
 app.use((err, req, res, next) => {
