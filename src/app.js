@@ -17,7 +17,12 @@ swagger(app);
 // set router
 app.use(require("./routes/index"));
 
-app.use(cors());
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions = { origin: true };
+  callback(null, corsOptions);
+}
+
+app.use(cors(corsOptionsDelegate))
 
 //Error handler
 app.use((err, req, res, next) => {
