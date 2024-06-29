@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const swagger = require('./swagger');
 
 app.use(bodyParser.json());
 
@@ -8,6 +9,9 @@ require('dotenv').config();
 
 //connect to mongodb
 require("./dbs/mongo");
+
+// swagger
+swagger(app);
 
 // set router
 app.use(require("./routers/index"));
