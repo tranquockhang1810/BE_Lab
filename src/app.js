@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const swagger = require('./swagger.js');
+const cors = require("cors");
 
 app.use(bodyParser.json());
 
@@ -15,6 +16,8 @@ swagger(app);
 
 // set router
 app.use(require("./routes/index"));
+
+app.use(cors());
 
 //Error handler
 app.use((err, req, res, next) => {
