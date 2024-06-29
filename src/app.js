@@ -14,15 +14,16 @@ require("./dbs/mongo");
 // swagger
 swagger(app);
 
-// set router
-app.use(require("./routes/index"));
-
+//cors
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions = { origin: true };
   callback(null, corsOptions);
 }
-
 app.use(cors(corsOptionsDelegate))
+
+// set router
+app.use(require("./routes/index"));
+
 
 //Error handler
 app.use((err, req, res, next) => {
